@@ -13,8 +13,13 @@ set(SOURCES
     ./src/session/Session.cpp
 )
 
+set(SOURCES1
+    ./src/client/client.cpp
+)
 
 add_executable(NeopleGameServer ${SOURCES})
+
+add_executable(NeopleGameClient ${SOURCES1})
 
 target_include_directories(
     NeopleGameServer
@@ -23,3 +28,7 @@ target_include_directories(
     src/server
     src/session
 )
+
+
+target_link_libraries(NeopleGameServer PRIVATE ws2_32)
+target_link_libraries(NeopleGameClient PRIVATE ws2_32)

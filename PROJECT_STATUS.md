@@ -103,27 +103,86 @@ Session 1 -> Player 101
 
 ---
 
-## Next Step
+## Day 2 - TCP Network Server
 
-### Day 2 - TCP Network Server
+### Goal
+TCP Socket을 이용하여 Client와 실제 연결을 수립하고
+Session과 TCP Connection을 연결한다.
 
-목표:
-- TCP Socket 기본 개념 학습
-- Server Socket 생성
-- `bind()`
-- `listen()`
-- `accept()`
-- Client 연결 확인
-- Session과 실제 TCP 연결의 관계 설계
-- 간단한 Client ↔ Server 통신 구현
+### Completed
 
-### Priority
-1. TCP 기본 동작 이해
-2. Socket API 이해
-3. Client 연결 수락
-4. 데이터 송수신
-5. 기존 Session 구조와 연결
+#### Winsock
+- `WSAStartup()`을 통한 Winsock 초기화
+- `WSACleanup()`을 통한 종료
+- `SOCKET` 타입 이해
 
-### Portfolio Focus
-단순한 기능 구현보다
-**네트워크 서버의 구조와 데이터 흐름을 설명할 수 있는 수준**을 목표로 한다.
+#### Server Socket
+- `socket()`을 이용한 TCP Socket 생성
+- `sockaddr_in`을 이용한 Server 주소 설정
+- `htons()`를 이용한 Port 설정
+- `inet_addr()`를 이용한 IP 설정
+- `bind()`를 이용한 주소 연결
+- `listen()`을 이용한 연결 대기
+- `accept()`를 이용한 Client 연결 수락
+
+#### Client
+- 별도의 `NeopleGameClient.exe` 생성
+- Client Socket 생성
+- `connect()`를 이용한 Server 연결
+- `send()`를 이용한 데이터 송신
+- `recv()`를 이용한 데이터 수신
+
+#### Session
+- Client Connection Socket 저장
+- `Send()` 구현
+- `Receive()` 구현
+- Session과 실제 TCP Connection 연결
+
+### Current Network Structure
+
+Server
+- `ListeningSocket`
+  - 새로운 Client 연결을 받는 용도
+- `sessions`
+  - Client별 Session 관리
+
+Session
+- `ClientSocket`
+  - 특정 Client와 실제 데이터 송수신
+- `playerId`
+  - 연결된 Player 정보
+
+Client
+- `clientSocket`
+  - Server와 TCP 통신
+
+### Network Flow
+
+Client:
+
+connect()
+↓
+Server ListeningSocket
+↓
+accept()
+↓
+Server Connection Socket
+↓
+Session 생성
+↓
+Session::Receive()
+↓
+Session::Send()
+
+### Verification
+
+실제 TCP Echo 통신 성공.
+
+Server:
+
+```text
+Server Listening...
+Player 101: 100 200 30 Alive
+Client connected!
+Hello Server
+Session ID: 1

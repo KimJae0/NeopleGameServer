@@ -33,21 +33,7 @@ int main()
                   << std::endl;
     }
 
-    // Session 테스트
-    int sessionId = server.AddSession();
-
-    Session* session = server.FindSession(sessionId);
-
-    if(session != nullptr)
-    {
-        session->ConnectPlayer(101);
-
-        std::cout << "Session "
-                  << sessionId
-                  << " -> Player "
-                  << session->GetPlayerId()
-                  << std::endl;
-    }
+    server.AcceptClient();
 
     return 0;
 }
