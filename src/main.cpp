@@ -33,7 +33,7 @@ int main()
                   << std::endl;
     }
 
-    server.AcceptClient();
+    server.Run();
 
     return 0;
 }

@@ -243,3 +243,32 @@ Server:
 ```text
 Packet: X=150 Y=300
 Player: X=150 Y=300
+
+
+## Day 4 - Multi Client & I/O Multiplexing
+
+### Goal
+
+Blocking `recv()` 기반의 단일 Client 처리 구조를 개선하여
+여러 Client를 동시에 관리할 수 있는 서버 Event Loop를 구현한다.
+
+또한 Client 연결 종료를 감지하고
+Session과 Socket을 안전하게 정리할 수 있도록 한다.
+
+---
+
+### Problem
+
+Day 3에서는 `ProcessSession()`을 분리했지만
+`Session::Receive()` 내부의 `recv()`가 blocking 방식으로 동작했다.
+
+따라서 하나의 Client가 데이터를 보내지 않고 대기하면
+해당 Client의 `recv()`에서 서버가 멈추게 된다.
+
+```text
+Client A
+connect
+↓
+recv() 대기
+↓
+Client B의 연결/Packet 처리 불가능

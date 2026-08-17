@@ -42,8 +42,11 @@ bool Session::Receive()
     );
 
     // 연결 종료 또는 오류
-    if (result <= 0)
+    if (result == 0)
     {
+        return false;
+    }
+    else if(result == SOCKET_ERROR){
         return false;
     }
 
@@ -106,4 +109,17 @@ bool Session::PopPacket(std::vector<uint8_t>& packet)
     );
 
     return true;
+}
+
+SOCKET Session::GetSocket(){
+    return ClientSocket;
+}
+
+void Session::Close()
+{
+
+    closesocket(ClientSocket);
+
+    ClientSocket = INVALID_SOCKET;
+    // ClientSocket을 닫는다.
 }

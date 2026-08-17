@@ -13,6 +13,8 @@ public:
     int Send(std::string data);
     bool Receive();
     bool PopPacket(std::vector<uint8_t>& packet);
+    SOCKET GetSocket();
+    void Close();
 
 private:
     int playerId;

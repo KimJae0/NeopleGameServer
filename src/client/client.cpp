@@ -59,16 +59,18 @@ int main()
     packet1.Header.Size = sizeof(packet1);
     packet1.Header.Type = PacketType::Move;
 
-    send(
-        clientSocket,
-        reinterpret_cast<const char *>(&packet1),
-        sizeof(packet1),
-        0);
+    
+    MovePacket packet2;
+    packet2.X = 500;
+    packet2.Y = 700;
+    packet2.Header.Size = sizeof(packet2);
+    packet2.Header.Type = PacketType::Move;
 
+    
     send(
         clientSocket,
-        reinterpret_cast<const char *>(&packet1),
-        sizeof(packet1),
+        reinterpret_cast<const char *>(&packet2),
+        sizeof(packet2),
         0);
 
     // 테스트가 끝날 때까지 프로그램 유지

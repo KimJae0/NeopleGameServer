@@ -119,12 +119,11 @@ void Server::AcceptClient()
     if (session != nullptr)
     {
         session->ConnectPlayer(101);
-        
     }
     std::cout << "Session ID: " << id << std::endl;
 }
 
-void Server::ProcessSession(Session *session)
+bool Server::ProcessSession(Session *session)
 {
     // 여기에서 Session의 데이터를 계속 처리
     bool result = session->Receive();
@@ -161,6 +160,76 @@ void Server::ProcessSession(Session *session)
                               << " Y=" << player->GetY() << std::endl;
                 }
             }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void Server::Run()
+{
+    while (true)
+    {
+        fd_set readSet;
+
+        FD_ZERO(&readSet);
+
+        FD_SET(ListeningSocket, &readSet);
+
+        for (auto &pair : sessions)
+        {
+            FD_SET(pair.second.GetSocket(), &readSet);
+        }
+
+        int result = select(
+            0,
+            &readSet,
+            nullptr,
+            nullptr,
+            nullptr);
+
+        if (result == SOCKET_ERROR)
+        {
+            // 오류 처리
+            continue;
+        }
+
+        if (FD_ISSET(ListeningSocket, &readSet))
+        {
+            AcceptClient();
+        }
+
+        std::vector<int> disconnectedSessions;
+
+        for (auto &pair : sessions)
+        {
+            // 현재 Session의 Socket이 준비되었는지 확인
+
+            if (FD_ISSET(pair.second.GetSocket(), &readSet))
+            {
+                Session *session = &pair.second;
+
+                if (ProcessSession(session) == false)
+                {
+                    disconnectedSessions.push_back(pair.first);
+                }
+            }
+
+            // 준비되었다면 ProcessSession() 호출
+        }
+
+        for (int sessionId : disconnectedSessions)
+        {
+            Session *session = FindSession(sessionId);
+
+            if (session != nullptr)
+            {
+                session->Close();
+                sessions.erase(sessionId);
+            }
+            // sessions에서 sessionId 제거
         }
     }
 }

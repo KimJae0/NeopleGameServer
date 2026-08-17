@@ -15,7 +15,8 @@ class Server{
         int AddSession(SOCKET ClientSocket);
         Session* FindSession(int sessionId);
         void AcceptClient();
-        void ProcessSession(Session* session);
+        bool ProcessSession(Session* session);
+        void Run();
 
     private:
         std::unordered_map<int, Player> players;
