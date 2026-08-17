@@ -186,3 +186,60 @@ Player 101: 100 200 30 Alive
 Client connected!
 Hello Server
 Session ID: 1
+
+
+## Day 3 - Packet Processing
+
+### Goal
+TCP Byte Stream을 게임 Packet으로 처리하고
+Packet을 실제 Player 상태 변경으로 연결한다.
+
+### Completed
+
+#### Packet
+- PacketHeader 구현
+- PacketType 정의
+- MovePacket 구현
+- Packet Size / Type 관리
+
+#### Packet Sending
+- Client에서 MovePacket 생성
+- 구조체 데이터를 TCP Socket으로 전송
+
+#### Packet Receiving
+- Session::Receive() 구현
+- ReceiveBuffer 구현
+- TCP Stream 기반 데이터 누적
+- PacketHeader 크기 확인
+- Packet 전체 수신 여부 확인
+- PopPacket() 구현
+- 처리한 Packet을 ReceiveBuffer에서 제거
+
+#### Packet Parsing
+- PacketHeader Type 확인
+- MovePacket 파싱
+- MovePacket의 X/Y 값 확인
+
+#### Game State Integration
+- Session과 Player 연결
+- Session의 Player ID 조회
+- Server::FindPlayer()를 통한 Player 조회
+- MovePacket → Player::Move() 연결
+- 실제 Player 위치 변경 검증
+
+#### Session Processing
+- ProcessSession() 함수 분리
+- Client 연결 처리와 Session 데이터 처리 역할 분리
+
+### Verification
+
+Client:
+- MovePacket
+- X = 150
+- Y = 300
+
+Server:
+
+```text
+Packet: X=150 Y=300
+Player: X=150 Y=300

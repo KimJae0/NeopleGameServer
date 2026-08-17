@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "../server/Packet.h"
+
 int main()
 {
     // 1. Winsock 초기화
@@ -19,8 +21,7 @@ int main()
     SOCKET clientSocket = socket(
         AF_INET,
         SOCK_STREAM,
-        IPPROTO_TCP
-    );
+        IPPROTO_TCP);
 
     if (clientSocket == INVALID_SOCKET)
     {
@@ -39,9 +40,8 @@ int main()
     // 4. Server에 연결
     result = connect(
         clientSocket,
-        (sockaddr*)&serverAddr,
-        sizeof(serverAddr)
-    );
+        (sockaddr *)&serverAddr,
+        sizeof(serverAddr));
 
     if (result == SOCKET_ERROR)
     {
@@ -53,27 +53,23 @@ int main()
 
     std::cout << "Connected to Server!" << std::endl;
 
-    std::string message = "Hello Server";
+    MovePacket packet1;
+    packet1.X = 150;
+    packet1.Y = 300;
+    packet1.Header.Size = sizeof(packet1);
+    packet1.Header.Type = PacketType::Move;
 
     send(
         clientSocket,
-        message.c_str(),
-        message.size(),
-        0
-    );
+        reinterpret_cast<const char *>(&packet1),
+        sizeof(packet1),
+        0);
 
-    std::vector<char> buffer(1024);
-
-    int recvResult = recv(
+    send(
         clientSocket,
-        buffer.data(),
-        buffer.size(),
-        0
-    );
-
-    std::string temp(buffer.data(), recvResult);
-
-    std::cout << temp << std::endl;
+        reinterpret_cast<const char *>(&packet1),
+        sizeof(packet1),
+        0);
 
     // 테스트가 끝날 때까지 프로그램 유지
     std::cin.get();
