@@ -11,6 +11,7 @@ set(SOURCES
     ./src/game/Player.cpp
     ./src/server/Server.cpp
     ./src/session/Session.cpp
+    ./src/database/Database.cpp
 )
 
 set(SOURCES1
@@ -18,7 +19,6 @@ set(SOURCES1
 )
 
 add_executable(NeopleGameServer ${SOURCES})
-
 add_executable(NeopleGameClient ${SOURCES1})
 
 target_include_directories(
@@ -27,8 +27,15 @@ target_include_directories(
     src/game
     src/server
     src/session
+    src/database
 )
-
 
 target_link_libraries(NeopleGameServer PRIVATE ws2_32)
 target_link_libraries(NeopleGameClient PRIVATE ws2_32)
+
+# MySQL Connector/C++
+set(mysql-concpp_DIR "C:/Users/tkrhk/Downloads/mysql-connector-c++-26.7.0-winx64/mysql-connector-c++-26.7.0-winx64")
+
+find_package(mysql-concpp REQUIRED)
+
+target_link_libraries(NeopleGameServer PRIVATE mysql::concpp)

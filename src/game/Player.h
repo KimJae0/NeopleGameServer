@@ -16,9 +16,11 @@ class Player{
         Player(int id);
         void Move(int X, int Y);
         void TakeDamage(int damage);
-        int GetX();
-        int GetY();
-        PlayerStatus GetStatus();
+        int GetID() const;
+        int GetX() const;
+        int GetY() const;
+        PlayerStatus GetStatus() const;
+        void SetStatus(int x, int y, int hp, PlayerState state);
 
 
     private:

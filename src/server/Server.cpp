@@ -233,3 +233,55 @@ void Server::Run()
         }
     }
 }
+
+bool Server::LoadPlayer(int id)
+{
+
+    AddPlayer(id);
+
+    Player *player = FindPlayer(id);
+
+    if (player != nullptr)
+    {
+        if (database.LoadPlayer(id, *player))
+        {
+            std::cout << "Player loaded: " << id << std::endl;
+            return true;
+        }
+        else
+        {
+            RemovePlayer(id);
+            return false;
+        }
+    }
+    else{
+        return false;
+    }
+}
+
+
+bool Server::Initialize(){
+    
+    
+    if(database.Connect() == false){
+        return false;
+    }
+    std::cout << "Database connected!" << std::endl;
+
+    if(LoadPlayer(101) == false){
+        return false;
+    }
+
+    return true;
+}
+
+bool Server::SavePlayer(int id){
+    Player* player = FindPlayer(id);
+
+    if (player == nullptr)
+    {
+        return false;
+    }
+
+    return database.SavePlayer(*player);
+}

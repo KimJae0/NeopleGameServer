@@ -272,3 +272,35 @@ connect
 recv() 대기
 ↓
 Client B의 연결/Packet 처리 불가능
+
+
+
+---
+
+## Day 5 - Database Integration
+
+### Goal
+
+MySQL을 게임 서버의 Player 데이터 저장소로 연결하고
+
+- 서버 시작 시 Player 데이터를 DB에서 Load
+- 서버의 Player 객체에 DB 데이터를 반영
+- 변경된 Player 상태를 DB에 Save
+
+하는 기본적인 Database 연동 구조를 구현한다.
+
+---
+
+### Completed
+
+#### MySQL
+
+- MySQL Community Server 8.0.36 설치 및 실행
+- `Players` 테이블 구성
+
+```text
+ID    int PRIMARY KEY
+X     int
+Y     int
+HP    int
+State int

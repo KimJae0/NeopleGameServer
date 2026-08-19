@@ -25,20 +25,32 @@ void Player::TakeDamage(int damage){
     }
 }
 
-int Player::GetX(){
+int Player::GetID() const{
+    return ID;
+}
+
+int Player::GetX() const{
     return X;
 }
 
-int Player::GetY(){
+int Player::GetY() const{
     return Y;
 }
 
 
-PlayerStatus Player::GetStatus(){
+PlayerStatus Player::GetStatus() const{
     PlayerStatus status;
 
     status.HP = this->HP;
     status.State = this->State;
 
     return status;
+}
+
+void Player::SetStatus(int x, int y, int hp, PlayerState state){
+    this->X = x;
+    this->Y = y;
+    this->HP = hp;
+    this->State = state;
+
 }

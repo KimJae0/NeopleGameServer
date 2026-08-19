@@ -2,6 +2,7 @@
 
 #include "Player.h"
 #include "Session.h"
+#include "Database.h"
 #include <unordered_map>
 #include <winsock.h>
 
@@ -17,11 +18,15 @@ class Server{
         void AcceptClient();
         bool ProcessSession(Session* session);
         void Run();
+        bool LoadPlayer(int id);
+        bool Initialize();
+        bool SavePlayer(int id);
 
     private:
         std::unordered_map<int, Player> players;
         std::unordered_map<int, Session> sessions;
         int nextSessionId;
         SOCKET ListeningSocket;
+        Database database;
         
 };
