@@ -12,14 +12,22 @@ set(SOURCES
     ./src/server/Server.cpp
     ./src/session/Session.cpp
     ./src/database/Database.cpp
+    ./src/taskqueue/TaskQueue.cpp
 )
 
 set(SOURCES1
     ./src/client/client.cpp
 )
 
+set(TASK_QUEUE_TEST
+    ./src/test/TaskQueueTest.cpp
+    ./src/taskqueue/TaskQueue.cpp
+)
+
 add_executable(NeopleGameServer ${SOURCES})
 add_executable(NeopleGameClient ${SOURCES1})
+
+add_executable(TaskQueueTest ${TASK_QUEUE_TEST})
 
 target_include_directories(
     NeopleGameServer
@@ -28,7 +36,16 @@ target_include_directories(
     src/server
     src/session
     src/database
+    src/taskqueue
 )
+
+target_include_directories(
+    TaskQueueTest
+    PRIVATE
+    src/taskqueue
+    src/game
+)
+
 
 target_link_libraries(NeopleGameServer PRIVATE ws2_32)
 target_link_libraries(NeopleGameClient PRIVATE ws2_32)

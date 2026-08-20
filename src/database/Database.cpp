@@ -87,3 +87,31 @@ bool Database::SavePlayer(const Player &player)
         return false;
     }
 }
+
+
+bool Database::SavePlayer(const Task& task){
+    try
+    {
+        int ID = task.id;
+        int X = task.x;
+        int Y = task.y;
+        int HP = task.HP;
+        int State = static_cast<int>(task.State);
+
+        session->sql(R"(
+            UPDATE players
+            SET X = ?,
+                Y = ?,
+                HP = ?,
+                State = ?
+            WHERE ID = ?
+        )").bind(X, Y, HP, State, ID).execute();
+
+        return true;
+    }
+    catch (const mysqlx::Error &e)
+    {
+        std::cout << e.what() << std::endl;
+        return false;
+    }
+}

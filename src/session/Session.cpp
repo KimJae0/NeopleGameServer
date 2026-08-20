@@ -2,6 +2,7 @@
 #include "../server/Packet.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 
 Session::Session(SOCKET ClientSocket){
@@ -41,6 +42,9 @@ bool Session::Receive()
         0
     );
 
+    std::cout << "recv bytes: " << result << std::endl;
+    
+    
     // 연결 종료 또는 오류
     if (result == 0)
     {
@@ -89,6 +93,8 @@ bool Session::PopPacket(std::vector<uint8_t>& packet)
 
     // Packet Size 가져오기
     int packetSize = header->Size;
+
+    std::cout << "Pop packet size: " << packetSize << std::endl;
 
     // Packet 전체가 들어왔는지 확인
     if (ReceiveBuffer.size() < packetSize)

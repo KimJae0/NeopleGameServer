@@ -27,6 +27,7 @@ Player *Server::FindPlayer(int id)
 Server::Server()
 {
     nextSessionId = 1;
+    running = true;
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
 
@@ -153,6 +154,19 @@ bool Server::ProcessSession(Session *session)
                         movePacket->X,
                         movePacket->Y);
 
+                    Task task;
+
+                    task.id = player->GetID();
+                    task.x = player->GetX();
+                    task.y = player->GetY();
+
+                    PlayerStatus status = player->GetStatus();
+
+                    task.HP = status.HP;
+                    task.State = status.State;
+
+                    taskQueue.Push(task);
+
                     std::cout << "Packet: X=" << movePacket->X
                               << " Y=" << movePacket->Y << std::endl;
 
@@ -170,7 +184,13 @@ bool Server::ProcessSession(Session *session)
 
 void Server::Run()
 {
-    while (true)
+    for (int i = 0; i < 3; i++)
+    {
+        workerThreads.push_back(std::thread(&Server::WorkerFunction, this));
+    }
+    // workerThread = std::thread(&Server::WorkerFunction, this);
+
+    while (running)
     {
         fd_set readSet;
 
@@ -183,12 +203,16 @@ void Server::Run()
             FD_SET(pair.second.GetSocket(), &readSet);
         }
 
+        timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 100000; // 100ms
+
         int result = select(
             0,
             &readSet,
             nullptr,
             nullptr,
-            nullptr);
+            &timeout);
 
         if (result == SOCKET_ERROR)
         {
@@ -232,6 +256,15 @@ void Server::Run()
             // sessions에서 sessionId 제거
         }
     }
+
+    taskQueue.Stop();
+
+    for (auto &worker : workerThreads)
+    {
+        worker.join();
+    }
+
+    workerThreads.clear();
 }
 
 bool Server::LoadPlayer(int id)
@@ -254,29 +287,32 @@ bool Server::LoadPlayer(int id)
             return false;
         }
     }
-    else{
+    else
+    {
         return false;
     }
 }
 
+bool Server::Initialize()
+{
 
-bool Server::Initialize(){
-    
-    
-    if(database.Connect() == false){
+    if (database.Connect() == false)
+    {
         return false;
     }
     std::cout << "Database connected!" << std::endl;
 
-    if(LoadPlayer(101) == false){
+    if (LoadPlayer(101) == false)
+    {
         return false;
     }
 
     return true;
 }
 
-bool Server::SavePlayer(int id){
-    Player* player = FindPlayer(id);
+bool Server::SavePlayer(int id)
+{
+    Player *player = FindPlayer(id);
 
     if (player == nullptr)
     {
@@ -284,4 +320,34 @@ bool Server::SavePlayer(int id){
     }
 
     return database.SavePlayer(*player);
+}
+
+void Server::WorkerFunction()
+{
+    Task task;
+
+    while (taskQueue.Pop(task))
+    {
+
+        bool result = database.SavePlayer(task);
+
+        if (result)
+        {
+            std::cout << std::this_thread::get_id() << " : Task saved!" << std::endl;
+        }
+        else
+        {
+            std::cout << "save failed" << std::endl;
+        }
+
+        /*std::cout << task.id << " "
+              << task.x << " "
+              << task.y << std::endl;
+              */
+    }
+}
+
+void Server::Stop()
+{
+    running = false;
 }

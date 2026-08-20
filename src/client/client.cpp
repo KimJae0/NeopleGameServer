@@ -2,6 +2,7 @@
 #include <winsock.h>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "../server/Packet.h"
 
@@ -59,19 +60,41 @@ int main()
     packet1.Header.Size = sizeof(packet1);
     packet1.Header.Type = PacketType::Move;
 
-    
     MovePacket packet2;
     packet2.X = 500;
     packet2.Y = 700;
     packet2.Header.Size = sizeof(packet2);
     packet2.Header.Type = PacketType::Move;
 
-    
-    send(
+    MovePacket packet3;
+    packet3.X = 650;
+    packet3.Y = 950;
+    packet3.Header.Size = sizeof(packet3);
+    packet3.Header.Type = PacketType::Move;
+
+    int sendResult1 = send(
+        clientSocket,
+        reinterpret_cast<const char *>(&packet1),
+        sizeof(packet1),
+        0);
+
+    std::cout << "send 1: " << sendResult1 << std::endl;
+
+    int sendResult2 = send(
         clientSocket,
         reinterpret_cast<const char *>(&packet2),
         sizeof(packet2),
         0);
+
+    std::cout << "send 2: " << sendResult2 << std::endl;
+
+    int sendResult3 = send(
+        clientSocket,
+        reinterpret_cast<const char *>(&packet3),
+        sizeof(packet3),
+        0);
+
+    std::cout << "send 3: " << sendResult3 << std::endl;
 
     // 테스트가 끝날 때까지 프로그램 유지
     std::cin.get();

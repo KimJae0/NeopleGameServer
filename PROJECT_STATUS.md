@@ -304,3 +304,49 @@ X     int
 Y     int
 HP    int
 State int
+
+
+
+
+
+
+
+
+## Day 6 - 비동기 처리 및 Worker Thread
+
+### 목표
+
+네트워크 I/O와 Database 작업을 분리하고,
+Task Queue와 Worker Thread를 이용해 DB 작업을 비동기적으로 처리한다.
+
+---
+
+### 1. TaskQueue 구현
+
+`TaskQueue`를 구현하여 네트워크 처리와 DB 작업 사이에 작업 큐를 추가했다.
+
+구성:
+
+- `std::queue<Task>` : 처리할 Task 저장
+- `std::mutex` : Queue 동시 접근 보호
+- `std::condition_variable` : Worker 대기 및 깨우기
+- `Push()` : Task 추가
+- `Pop()` : Task 가져오기
+- `Stop()` : Worker 종료 요청
+
+```text
+ProcessSession()
+      |
+      v
+TaskQueue.Push()
+      |
+      v
++-------------+
+| Task Queue  |
++-------------+
+      |
+      v
+Worker Thread
+      |
+      v
+Database.SavePlayer()
